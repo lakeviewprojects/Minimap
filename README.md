@@ -8,6 +8,7 @@ Server-side minimap builder and client-side keybind for the Phone2 Map app. This
 |---|---|---|
 | **Phone2** | `StarterGui.Phone2` | Yes (client keybind opens the Map app) |
 | **Fusion3** | `ReplicatedFirst.Fusion3` | Yes (client keybind uses `peek`) |
+| **Economy** | `ReplicatedStorage.Economy` | Yes (Fast Travel purchase) |
 
 ## Rojo Setup
 
@@ -88,7 +89,29 @@ If a MapLabel's `Label` text contains `"stair"` (case-insensitive), the builder 
 
 ### Floor-Aware Routing
 
-When the Map app navigates to a location on a higher floor, it first routes the player to the nearest `Stairs` MapLabel, then switches to the real destination once the player climbs above the floor threshold. Floor thresholds are configured in the Map app's `FLOOR_HEIGHT` table.
+When the Map app navigates to a location on a different floor, it first routes the player to the nearest `Stairs` MapLabel, then switches to the real destination once the player crosses the floor threshold. This works **bidirectionally** — routing to stairs whether the player needs to go up *or* down.
+
+Floor thresholds are configured in the Map app's `FLOOR_HEIGHT` table (e.g. `{ [2] = 17 }` means Floor 2 begins at Y ≥ 17). The helper `getPlayerFloor(y)` returns the player's current floor number.
+
+**Floor badges** are appended automatically:
+- Minimap labels show `"Room 201 (F2)"`
+- Location cards show `"Room 201 · Floor 2"`
+
+### Fast Travel
+
+The Map app includes a **Fast Travel** feature — a green pill-shaped button that appears whenever a navigation target is active (label-based or star waypoint).
+
+| Property | Value |
+|----------|-------|
+| Cost | $250 in-game cash (via Economy submodule) |
+| Activation | Press-and-hold for 2 seconds |
+| Visual | White progress bar fills during hold |
+| Teleport | Moves player to the active navigation target (X/Z) |
+| Insufficient funds | Shows a prompt via `InsufficientFundsNotify` |
+
+The button appears in two locations:
+1. **Bottom-center of the minimap view** — visible when viewing the map and a target is set
+2. **Below the "Clear Waypoint" button** on the standalone ScreenGui — visible when a target is set
 
 ### Example MapLabel Setup
 
